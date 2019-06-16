@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>商品管理</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../plugins/adminLTE/css/AdminLTE.css">
+    <link rel="stylesheet" href="../plugins/adminLTE/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
+
+	<link rel="stylesheet" href="../plugins/kindeditor/themes/default/default.css"/>
+	<script charset="utf-8" src="../plugins/kindeditor/kindeditor-min.js"></script>
+	<script charset="utf-8" src="../plugins/kindeditor/lang/zh_CN.js"></script>
+
+	<script src="../plugins/angularjs/angular.min.js"></script>
+	<script src="../plugins/angularjs/pagination.js"></script>
+	<link rel="stylesheet" href="../plugins/angularjs/pagination.css">
+	<script src="../js/base_pagination.js"></script>
+	<script src="../js/service/goodsService.js"></script>
+	<script src="../js/service/itemCatService.js"></script>
+	<script src="../js/service/typeTemplateService.js"></script>
+	<script src="../js/controller/baseController.js"></script>
+	<script src="../js/controller/goodsController.js"></script>
+</head>
+
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController" ng-init="findItemCatList();searchEntity={}">
+  <!-- .box-body -->
+                
+                    <div class="box-header with-border">
+                        <h3 class="box-title">商品审核</h3>
+                    </div>
+
+                    <div class="box-body">
+
+                        <!-- 数据表格 -->
+                        <div class="table-box">
+
+                            <!--工具栏-->
+                            <div class="pull-left">
+                                <div class="form-group form-inline">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default" ng-click="dele()" title="删除" ><i class="fa fa-trash-o"></i> 删除</button>
+                                        <button type="button" class="btn btn-default" ng-click="updateStatus('1')" title="审核通过" ><i class="fa fa-check"></i> 审核通过</button>
+                                        <button type="button" class="btn btn-default" ng-click="updateStatus('2')" title="驳回" ><i class="fa fa-ban"></i> 驳回</button>
+                                        <button type="button" class="btn btn-default" title="刷新" ng-click="reloadList()" ><i class="fa fa-refresh"></i> 刷新</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="box-tools pull-right">
+                                <div class="has-feedback">
+                                    商品名称：<input >
+									<button class="btn btn-default" >查询</button>                                    
+                                </div>
+                            </div>
+                            <!--工具栏/-->
+
+			                  <!--数据列表-->
+			                  <table id="dataList" class="table table-bordered table-striped table-hover dataTable">
+			                      <thead>
+			                          <tr>
+			                              <th class="" style="padding-right:0px">
+			                                  <input id="selall" type="checkbox" class="icheckbox_square-blue" ng-model="all" ng-click="selectAll($event)">
+			                              </th> 
+										  <th class="sorting_asc">商品ID</th>
+									      <th class="sorting">商品名称</th>
+									      <th class="sorting">商品价格</th>
+									      <th class="sorting">一级分类</th>
+									      <th class="sorting">二级分类</th>
+									      <th class="sorting">三级分类</th>
+									      <th class="sorting">状态</th>									     						
+					                      <th class="text-center">操作</th>
+			                          </tr>
+			                      </thead>
+			                      <tbody>
+			                          <tr ng-repeat="entity in list">
+			                              <td><input type="checkbox" ng-checked="all" ng-click="selectcheck($event,entity.id)"></td>
+				                          <td>{{entity.id}}</td>
+									      <td>{{entity.goodsName}}</td>
+									      <td>{{entity.price}}</td>
+									      <td>{{itemCatList[entity.category1Id]}}</td>
+									      <td>{{itemCatList[entity.category2Id]}}</td>
+									      <td>{{itemCatList[entity.category3Id]}}</td>
+		                                  <td>		                                  
+		                                  	<span>{{status[entity.auditStatus]}}</span>
+		                                  	
+		                                  </td>		                                  
+		                                  <td class="text-center">
+											  <button type="button" class="btn bg-olive btn-xs" data-toggle="modal" data-target="#sellerModal" ng-click="findOne(entity.id)">详情</button>
+		                                  </td>
+			                          </tr>
+
+			                      </tbody>
+			                  </table>
+			                  <!--数据列表/-->
+							<tm-pagination conf="paginationConf"></tm-pagination>
+
+
+						</div>
+                        <!-- 数据表格 /-->
+                        
+                        
+                     </div>
+                    <!-- /.box-body -->
+  <div class="modal fade" id="sellerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog modal-lg">
+		  <div class="modal-content">
+			  <div  class="modal-header">
+				  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				  <h3 id="myModalLabel">商品详情</h3>{{specList}}
+			  </div>
+			  <div class="modal-body">
+
+				  <!-- 商品详情 -->
+				  <section class="content">
+
+					  <div class="box-body">
+
+						  <!--tab页-->
+						  <div class="nav-tabs-custom">
+
+							  <!--tab头-->
+							  <ul class="nav nav-tabs">
+								  <li class="active">
+									  <a href="#home" data-toggle="tab">商品基本信息</a>
+								  </li>
+								  <li >
+									  <a href="#pic_upload" data-toggle="tab">商品图片</a>
+								  </li>
+								  <li >
+									  <a href="#customAttribute" data-toggle="tab">扩展属性</a>
+								  </li>
+								  <li >
+									  <a href="#spec" data-toggle="tab" >规格</a>
+								  </li>
+							  </ul>
+							  <!--tab头/-->
+
+							  <!--tab内容-->
+							  <div class="tab-content">
+
+								  <!--表单内容-->
+								  <div class="tab-pane active" id="home">
+									  <div class="row data-type">
+										  <div class="col-md-2 title">商品分类</div>
+
+										  <div class="col-md-10 data">
+											  <table>
+												  <tr>
+													  <td>
+														  <select class="form-control" disabled="none" ng-model="entity.goods.category1Id" ng-options="item.id as item.name for item in itemCat1List" >
+														  </select>
+													  </td>
+													  <td>
+														  <select class="form-control select-sm" disabled="none" ng-model="entity.goods.category2Id" ng-options="item.id as item.name for item in itemCat2List" ></select>
+													  </td>
+													  <td>
+														  <select class="form-control select-sm" disabled="none" ng-model="entity.goods.category3Id" ng-options="item.id as item.name for item in itemCat3List" ></select>
+													  </td>
+													  <td>
+														  模板ID:{{entity.goods.typeTemplateId}}
+													  </td>
+												  </tr>
+											  </table>
+
+										  </div>
+
+
+										  <div class="col-md-2 title">商品名称</div>
+										  <div class="col-md-10 data">
+											  <input type="text" class="form-control" disabled="none"   placeholder="商品名称" value="" ng-model="entity.goods.goodsName">
+										  </div>
+
+										  <div class="col-md-2 title">品牌</div>
+										  <div class="col-md-10 data">
+											  <select class="form-control" ng-model="entity.goods.brandId" disabled="none" ng-options="brand.id as brand.text for brand in typeTemplateBrandList"></select>
+										  </div>
+
+										  <div class="col-md-2 title">副标题</div>
+										  <div class="col-md-10 data">
+											  <input type="text" class="form-control" disabled="none" ng-model="entity.goods.caption" placeholder="副标题" value="">
+										  </div>
+
+										  <div class="col-md-2 title">价格</div>
+										  <div class="col-md-10 data">
+											  <div class="input-group">
+												  <span class="input-group-addon">¥</span>
+												  <input type="text" disabled="none" class="form-control" ng-model="entity.goods.price" placeholder="价格" value="">
+											  </div>
+										  </div>
+
+										  <div class="col-md-2 title editer">商品介绍</div>
+										  <div class="col-md-10 data editer">
+											  <textarea name="content" style="width:800px;height:400px;visibility:hidden;" ng-model="entity.goodsDesc.introduction"></textarea>
+										  </div>
+
+										  <div class="col-md-2 title rowHeight2x">包装列表</div>
+										  <div class="col-md-10 data rowHeight2x">
+
+											  <textarea rows="4" disabled="none"  class="form-control" ng-model="entity.goodsDesc.packageList"  placeholder="包装列表"></textarea>
+										  </div>
+
+										  <div class="col-md-2 title rowHeight2x">售后服务</div>
+										  <div class="col-md-10 data rowHeight2x">
+											  <textarea rows="4" disabled="none" class="form-control"   ng-model="entity.goodsDesc.saleService"   placeholder="售后服务"></textarea>
+										  </div>
+
+
+									  </div>
+								  </div>
+
+								  <!--图片上传-->
+								  <div class="tab-pane" id="pic_upload">
+									  <div class="row data-type">
+										  <!-- 颜色图片 -->
+										  <div class="btn-group">
+											  <button type="button" disabled="none" class="btn btn-default" title="新建" ng-click="image_entity={}" data-target="#uploadModal"  data-toggle="modal"  ><i class="fa fa-file-o"></i> 新建</button>
+
+										  </div>
+
+										  <table class="table table-bordered table-striped table-hover dataTable">
+											  <thead>
+											  <tr>
+
+												  <th class="sorting">颜色</th>
+												  <th class="sorting">图片</th>
+												  <th class="sorting">操作</th>
+											  </thead>
+											  <tbody>
+											  <tr ng-repeat="image in entity.goodsDesc.itemImages">
+												  <td>
+													  {{image.color}}
+												  </td>
+												  <td>
+													  <img alt="" src="{{image.url}}" width="100px" height="100px">
+												  </td>
+												  <td> <button type="button" disabled="none"  class="btn btn-default" title="删除" ng-click="dele_image_entity($index)"><i class="fa fa-trash-o"></i> 删除</button></td>
+											  </tr>
+											  </tbody>
+										  </table>
+
+									  </div>
+								  </div>
+
+
+								  <!--扩展属性-->
+								  <div class="tab-pane" id="customAttribute">
+									  <div class="row data-type">
+										  <div ng-repeat="customAttributeItem in entity.goodsDesc.customAttributeItems">
+											  <div class="col-md-2 title">{{customAttributeItem.text}}</div>
+											  <div class="col-md-10 data">
+												  <input disabled="none" class="form-control" placeholder="{{customAttributeItem.text}}" ng-model="customAttributeItem.value">
+											  </div>
+										  </div>
+
+									  </div>
+								  </div>
+
+								  <!--规格-->
+								  <div class="tab-pane" id="spec">
+									  <div class="row data-type">
+										  <div class="col-md-2 title">是否启用规格</div>
+										  <div class="col-md-10 data">
+											  <input type="checkbox" ng-model="entity.goods.isEnableSpec" disabled="none"
+													 ng-true-value="1" ng-false-value="0">
+										  </div>
+									  </div>
+									  <p>
+
+									  <div ng-if="entity.goods.isEnableSpec==1">
+
+										  <div class="row data-type">
+
+											  <div ng-repeat="specification in specList">
+												  <div class="col-md-2 title">{{specification.text}}</div>
+												  <div class="col-md-10 data">
+
+					                            <span ng-repeat="option in specification.options">
+					                            	<input disabled="none" ng-checked="checkAttributeValue(specification.text,option.optionName)"  type="checkbox" ng-click="updateSpecAttribute($event,specification.text,option.optionName);createItemList()">{{option.optionName}}
+					                            </span>
+
+
+												  </div>
+											  </div>
+
+
+										  </div>
+
+
+										  <div class="row data-type">
+											  <table class="table table-bordered table-striped table-hover dataTable">
+												  <thead>
+												  <tr>
+													  <th class="sorting" ng-repeat="spec in entity.goodsDesc.specificationItems">{{spec.attributeName}}</th>
+
+													  <th class="sorting">价格</th>
+													  <th class="sorting">库存</th>
+													  <th class="sorting">是否启用</th>
+													  <th class="sorting">是否默认</th>
+												  </tr>
+												  </thead>
+												  <tbody>
+												  <tr ng-repeat="item in entity.itemList" disabled="none">
+													  <td ng-repeat="pojo in entity.goodsDesc.specificationItems">
+														  {{item.spec[pojo.attributeName]}}
+													  </td>
+
+													  <td>
+														  <input class="form-control"  placeholder="价格" ng-model="item.price">
+													  </td>
+													  <td>
+														  <input class="form-control" placeholder="库存数量" ng-model="item.num">
+													  </td>
+													  <td>
+														  <input type="checkbox" ng-model="item.status" ng-true-value="1" ng-false-value="0" >
+													  </td>
+													  <td>
+														  <input type="checkbox" ng-model="item.isDefault" ng-true-value="1" ng-false-value="0">
+													  </td>
+												  </tr>
+
+												  </tbody>
+											  </table>
+
+										  </div>
+
+									  </div>
+								  </div>
+
+							  </div>
+							  <!--tab内容/-->
+							  <!--表单内容/-->
+
+						  </div>
+
+
+
+
+					  </div>
+					  <div class="btn-toolbar list-toolbar">
+						  <button class="btn btn-primary" ng-click="save()" disabled="none"><i class="fa fa-save" ></i>保存</button>
+						  <a class="btn btn-default" href="goods.html">返回列表</a>
+					  </div>
+
+				  </section>
+			  </div>
+		  </div>
+	  </div>
+  </div>
+  <script type="text/javascript">
+
+      var editor;
+      KindEditor.ready(function(K) {
+          editor = K.create('textarea[name="content"]', {
+              allowFileManager : true
+          });
+      });
+
+  </script>
+</body>
+
+</html>
