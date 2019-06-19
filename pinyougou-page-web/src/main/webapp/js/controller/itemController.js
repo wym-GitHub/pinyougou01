@@ -1,4 +1,4 @@
-app.controller('itemController',function ($scope,$location) {
+app.controller('itemController',function ($scope,$location,$http) {
 
 
 
@@ -79,8 +79,28 @@ app.controller('itemController',function ($scope,$location) {
 
         $scope.sku={id:0,title:'--------',price:0};//没有匹配
     }
+
+    //添加到购物车
     $scope.addToCart=function(){
         alert('skuid:'+$scope.sku.id);
+        alert('num:'+$scope.Num);
+        //跨域请求
+       $http.get("http://localhost:9107/cart/addGoodsToCartList.do?itemId="+$scope.sku.id+"&num="+$scope.Num,{'withCredentials':true}).success(
+            function (response) {
+                if(response.success){
+                    //添加购物车成功跳转到购物车页面
+                    location.href="http://localhost:9107/cart.html"
+
+                }else{
+                    alert(response.massage);
+                }
+            }
+      
+
+
+       )
+
+
     }
 
 })

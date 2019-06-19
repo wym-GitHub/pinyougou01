@@ -8,6 +8,7 @@ import com.pinyougou.utils.CookieUtil;
 import entity.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -66,8 +67,12 @@ public class CartController {
     }
 
     //添加商品到购物车
+    //允许跨域设置
+    @CrossOrigin(origins="http://localhost:9105",allowCredentials="true")
     @RequestMapping("addGoodsToCartList")
     public Result addGoodsToCartList(Long itemId, Integer num) {
+//        response.setHeader("Access-Control-Allow-Origin", "http://localhost:9105");
+//        response.setHeader("Access-Control-Allow-Credentials", "true");
         //获取登录名称
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
 

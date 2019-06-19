@@ -112,10 +112,24 @@
             <groupId>com.itheima</groupId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
+        <dependency>
+            <artifactId>pinyougou-order-interface</artifactId>
+            <groupId>com.itheima</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!--文件上传依赖,commcommon里面的fastdfs工具类-->
         <dependency>
             <artifactId>pinyougou-common</artifactId>
+            <groupId>com.itheima</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itheima</groupId>
+            <artifactId>pinyougou-user-interface</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <artifactId>pinyougou-pay-interface</artifactId>
             <groupId>com.itheima</groupId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
