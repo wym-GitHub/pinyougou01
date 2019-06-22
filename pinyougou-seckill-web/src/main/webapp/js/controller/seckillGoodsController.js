@@ -66,5 +66,7 @@ app.controller('seckillGoodsController' ,function($scope,$location,seckillGoodsS
 		);
 		
 	}
+
+
 	
 });
