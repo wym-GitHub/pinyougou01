@@ -9,7 +9,7 @@
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
    <!--读取配置文件中的上传文件服务器地址-->
-    <context:property-placeholder location="classpath:config/application.properties" />
+    <context:property-placeholder location="classpath:config/application.properties" ignore-unresolvable="true"/>
 	
 	<mvc:annotation-driven>
 	  <mvc:message-converters register-defaults="true">
@@ -34,7 +34,7 @@
 
 	<!-- 引用dubbo 服务 -->
 	<dubbo:application name="pinyougou-shop-web" />
-	<dubbo:registry address="zookeeper://192.168.25.128:2181"/>
+	<!--<dubbo:registry address="zookeeper://192.168.25.128:2181"/>-->
 	<dubbo:annotation package="com.pinyougou.sellergoods.controller" />
 
 </beans>

@@ -33,26 +33,26 @@ public class SeckillGoodsServiceImpl implements SeckillGoodsService {
 		//首先先从缓存中读取,
 		List<TbSeckillGoods> seckillGoods = redisTemplate.boundHashOps("seckillGoods").values();
 
-		if(seckillGoods==null||seckillGoods.size()<=0){//缓存中没有从数据库查询
-
-			System.out.println("从数据库读取秒杀商品");
-			TbSeckillGoodsExample tbSeckillGoodsExample=new TbSeckillGoodsExample();
-			Criteria criteria = tbSeckillGoodsExample.createCriteria();
-			criteria.andStatusEqualTo("1");//审核通过
-			criteria.andStockCountGreaterThan(0);//库存大于0
-			criteria.andStartTimeLessThanOrEqualTo(new Date());//开始时间小于当前时间
-			criteria.andEndTimeGreaterThan(new Date());//结束时间要大于当前时间
-			seckillGoods = seckillGoodsMapper.selectByExample(tbSeckillGoodsExample);
-			//将商品存入到缓存中
-			System.out.println("存入缓存");
-			for (TbSeckillGoods seckillGood : seckillGoods) {
-				redisTemplate.boundHashOps("seckillGoods").put(seckillGood.getId(), seckillGood);
-
-			}
-
-		}else{
-			System.out.println("从缓存中读取");
-		}
+//		if(seckillGoods==null||seckillGoods.size()<=0){//缓存中没有从数据库查询
+//
+//			System.out.println("从数据库读取秒杀商品");
+//			TbSeckillGoodsExample tbSeckillGoodsExample=new TbSeckillGoodsExample();
+//			Criteria criteria = tbSeckillGoodsExample.createCriteria();
+//			criteria.andStatusEqualTo("1");//审核通过
+//			criteria.andStockCountGreaterThan(0);//库存大于0
+//			criteria.andStartTimeLessThanOrEqualTo(new Date());//开始时间小于当前时间
+//			criteria.andEndTimeGreaterThan(new Date());//结束时间要大于当前时间
+//			seckillGoods = seckillGoodsMapper.selectByExample(tbSeckillGoodsExample);
+//			//将商品存入到缓存中
+//			System.out.println("存入缓存");
+//			for (TbSeckillGoods seckillGood : seckillGoods) {
+//				redisTemplate.boundHashOps("seckillGoods").put(seckillGood.getId(), seckillGood);
+//
+//			}
+//
+//		}else{
+//			System.out.println("从缓存中读取");
+//		}
 
 
 		return seckillGoods;
