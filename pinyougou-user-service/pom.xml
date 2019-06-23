@@ -103,6 +103,11 @@
             <version>1.0-SNAPSHOT</version>
             <artifactId>pinyougou-dao</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.itheima</groupId>
+            <artifactId>pinyougou-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 
